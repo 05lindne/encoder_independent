@@ -1,0 +1,9 @@
+{
+    "arduino_folder": "/usr/share/arduino-1.0.5", 
+    "baudrate": 4, 
+    "board": 7, 
+    "full_compilation": true, 
+    "platform": 1, 
+    "platform_name": "Arduino AVR Boards", 
+    "serial_port": 0
+}
