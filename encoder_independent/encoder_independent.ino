@@ -2,6 +2,7 @@
 // Encoder Functions--------------------------------------------------
 
 //libraries for high performance reads and writes e.g. fastDigitalRead( pin )
+#include <DigitalIO.h>
 #include "SoftSPI.h"
 
 //Encoder specific variables-----------------------
@@ -22,8 +23,10 @@ volatile long oldPos = 0;
 // volatile long encoderRev = 0;
 // volatile long oldRev = 0;
 
+volatile long Anew = 0;
 volatile long Aold = 0;
 volatile long Bnew = 0;
+volatile long Bold = 0;
 // volatile long A1old = 1; // inverted channels
 // volatile long B1new = 1; // inverted channels
 
@@ -89,74 +92,74 @@ void loop()
 
 
 
-// Interrupt on A changing state
-void HandleInterruptA(){
-
-  //heart of the encoder count
-  // (Bnew^Aold && B1new^A1old) ? encoderPos++ : encoderPos-- ; // XOR for normal and inverted channels and comparison 
-  Bnew^Aold ? encoderPos++ : encoderPos-- ; // XOR for normal and inverted channels and comparison 
-
-  Aold = fastDigitalRead(encoderPinA);
-  // A1old = fastDigitalRead(encoderPinA1);
-
-}
-
-// Interrupt on B changing state
-void HandleInterruptB(){
-
-  Bnew=fastDigitalRead(encoderPinB);
-  // B1new=fastDigitalRead(encoderPinB1);
-
-  //heart of the encoder count
-  // (Bnew^Aold && B1new^A1old) ? encoderPos++:encoderPos--;// XOR for normal and inverted channels and comparison
-  Bnew^Aold ? encoderPos++:encoderPos--;// XOR for normal and inverted channels and comparison
-
-}
-
-
-// // Interrupt service routines for the left motor's quadrature encoder
+// // Interrupt on A changing state
 // void HandleInterruptA(){
-//   BSet = fastDigitalRead(encoderPinB);
-//   ASet = fastDigitalRead(encoderPinA);
-//   B1Set = fastDigitalRead(encoderPinB1);
-//   A1Set = fastDigitalRead(encoderPinA1);
-  
-//   if ( (BSet == B1Set) || (ASet == A1Set) ) return;
 
-//   encoderPos+=ParseEncoder();
-  
-//   APrev = ASet;
-//   BPrev = BSet;
+//   //heart of the encoder count
+//   // (Bnew^Aold && B1new^A1old) ? encoderPos++ : encoderPos-- ; // XOR for normal and inverted channels and comparison 
+//   Bnew^Aold ? encoderPos++ : encoderPos-- ; // XOR for normal and inverted channels and comparison 
+
+//   Aold = fastDigitalRead(encoderPinA);
+//   // A1old = fastDigitalRead(encoderPinA1);
+
 // }
 
-// // Interrupt service routines for the right motor's quadrature encoder
+// // Interrupt on B changing state
 // void HandleInterruptB(){
-//   // Test transition;
-//   BSet = fastDigitalRead(encoderPinB);
-//   ASet = fastDigitalRead(encoderPinA);
-//   B1Set = fastDigitalRead(encoderPinB1);
-//   A1Set = fastDigitalRead(encoderPinA1);
 
-//   if ( (BSet == B1Set) || (ASet == A1Set) ) return;
+//   Bnew=fastDigitalRead(encoderPinB);
+//   // B1new=fastDigitalRead(encoderPinB1);
 
-//   encoderPos+=ParseEncoder();
+//   //heart of the encoder count
+//   // (Bnew^Aold && B1new^A1old) ? encoderPos++:encoderPos--;// XOR for normal and inverted channels and comparison
+//   Bnew^Aold ? encoderPos++:encoderPos--;// XOR for normal and inverted channels and comparison
+
+// }
+
+
+// Interrupt service routines for the left motor's quadrature encoder
+void HandleInterruptA(){
+  Bnew = fastDigitalRead(encoderPinB);
+  Anew = fastDigitalRead(encoderPinA);
+  // B1Set = fastDigitalRead(encoderPinB1);
+  // A1Set = fastDigitalRead(encoderPinA1);
   
-//   APrev = ASet;
-//   BPrev = BSet;
-// }
+  // if ( (Bnew == B1Set) || (Anew == A1Set) ) return;
 
-// int ParseEncoder(){
-//   if(APrev && BPrev){
-//     if(!ASet && BSet) return 1;
-//     if(ASet && !BSet) return -1;
-//   }else if(!APrev && BPrev){
-//     if(!ASet && !BSet) return 1;
-//     if(ASet && BSet) return -1;
-//   }else if(!APrev && !BPrev){
-//     if(ASet && !BSet) return 1;
-//     if(!ASet && BSet) return -1;
-//   }else if(APrev && !BPrev){
-//     if(ASet && BSet) return 1;
-//     if(!ASet && !BSet) return -1;
-//   }
-// }
+  encoderPos+=ParseEncoder();
+  
+  Aold = Anew;
+  Bold = Bnew;
+}
+
+// Interrupt service routines for the right motor's quadrature encoder
+void HandleInterruptB(){
+  // Test transition;
+  Bnew = fastDigitalRead(encoderPinB);
+  Anew = fastDigitalRead(encoderPinA);
+  // B1Set = fastDigitalRead(encoderPinB1);
+  // A1Set = fastDigitalRead(encoderPinA1);
+
+  // if ( (Bnew == B1Set) || (Anew == A1Set) ) return;
+
+  encoderPos+=ParseEncoder();
+  
+  Aold = Anew;
+  Bold = Bnew;
+}
+
+int ParseEncoder(){
+  if(Aold && Bold){
+    if(!Anew && Bnew) return 1;
+    if(Anew && !Bnew) return -1;
+  }else if(!Aold && Bold){
+    if(!Anew && !Bnew) return 1;
+    if(Anew && Bnew) return -1;
+  }else if(!Aold && !Bold){
+    if(Anew && !Bnew) return 1;
+    if(!Anew && Bnew) return -1;
+  }else if(Aold && !Bold){
+    if(Anew && Bnew) return 1;
+    if(!Anew && !Bnew) return -1;
+  }
+}
