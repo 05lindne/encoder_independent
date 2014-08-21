@@ -48,8 +48,8 @@ void setup(){
   pinMode(encoderPinB, INPUT);      // sets pin B as input
   digitalWrite(encoderPinB, LOW);  // turn on pullup resistors
   
-  attachInterrupt(encoderInterruptA, HandleInterruptA, RISING);
-  attachInterrupt(encoderInterruptB, HandleInterruptB, RISING);
+  attachInterrupt(encoderInterruptA, HandleInterruptA, CHANGE);
+  attachInterrupt(encoderInterruptB, HandleInterruptB, CHANGE);
 
   Serial.println("Encoder configuration done.");               
 }
@@ -112,3 +112,51 @@ void HandleInterruptB(){
   Bnew^Aold ? encoderPos++:encoderPos--;// XOR for normal and inverted channels and comparison
 
 }
+
+
+// // Interrupt service routines for the left motor's quadrature encoder
+// void HandleInterruptA(){
+//   BSet = fastDigitalRead(encoderPinB);
+//   ASet = fastDigitalRead(encoderPinA);
+//   B1Set = fastDigitalRead(encoderPinB1);
+//   A1Set = fastDigitalRead(encoderPinA1);
+  
+//   if ( (BSet == B1Set) || (ASet == A1Set) ) return;
+
+//   encoderPos+=ParseEncoder();
+  
+//   APrev = ASet;
+//   BPrev = BSet;
+// }
+
+// // Interrupt service routines for the right motor's quadrature encoder
+// void HandleInterruptB(){
+//   // Test transition;
+//   BSet = fastDigitalRead(encoderPinB);
+//   ASet = fastDigitalRead(encoderPinA);
+//   B1Set = fastDigitalRead(encoderPinB1);
+//   A1Set = fastDigitalRead(encoderPinA1);
+
+//   if ( (BSet == B1Set) || (ASet == A1Set) ) return;
+
+//   encoderPos+=ParseEncoder();
+  
+//   APrev = ASet;
+//   BPrev = BSet;
+// }
+
+// int ParseEncoder(){
+//   if(APrev && BPrev){
+//     if(!ASet && BSet) return 1;
+//     if(ASet && !BSet) return -1;
+//   }else if(!APrev && BPrev){
+//     if(!ASet && !BSet) return 1;
+//     if(ASet && BSet) return -1;
+//   }else if(!APrev && !BPrev){
+//     if(ASet && !BSet) return 1;
+//     if(!ASet && BSet) return -1;
+//   }else if(APrev && !BPrev){
+//     if(ASet && BSet) return 1;
+//     if(!ASet && !BSet) return -1;
+//   }
+// }
