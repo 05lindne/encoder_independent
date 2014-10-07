@@ -6,36 +6,37 @@
 
 //Encoder specific variables-----------------------
 #define encoderPinA 2
-#define encoderPinB 3
-#define encoderPinA1 4 //0 // inverted channels
-#define encoderPinB1 5 //1 // inverted channels
+// #define encoderPinB 3
+#define encoderPinB 8
+// #define encoderPinA1 4 //0 // inverted channels
+// #define encoderPinB1 5 //1 // inverted channels
 
 
 
 // int encoderInterruptA = 0;
 // int encoderInterruptB = 1;
 int encoderInterruptA = 1;
-int encoderInterruptB = 0;
+// int encoderInterruptB = 0;
 
 volatile long encoderPos = 1;
 volatile long oldPos = 0;
 // volatile long encoderRev = 0;
 // volatile long oldRev = 0;
 
-volatile long Anew = 0;
-volatile long Aold = 0;
-volatile long Bnew = 0;
-volatile long Bold = 0;
+// volatile long Anew = 0;
+// volatile long Aold = 0;
+// volatile long Bnew = 0;
+// volatile long Bold = 0;
 // volatile long A1old = 1; // inverted channels
 // volatile long B1new = 1; // inverted channels
 
-
+volatile long BSet = 0;
 
 
 int test =0;
 
 void HandleInterruptA();
-void HandleInterruptB();
+// void HandleInterruptB();
 
 
 void setup(){
@@ -50,8 +51,8 @@ void setup(){
   pinMode(encoderPinB, INPUT);      // sets pin B as input
   digitalWrite(encoderPinB, LOW);  // turn on pullup resistors
   
-  attachInterrupt(encoderInterruptA, HandleInterruptA, CHANGE);
-  attachInterrupt(encoderInterruptB, HandleInterruptB, CHANGE);
+  attachInterrupt(encoderInterruptA, HandleInterruptA, RISING);
+  // attachInterrupt(encoderInterruptB, HandleInterruptB, CHANGE);
 
   Serial.println("Encoder configuration done.");               
 }
@@ -116,49 +117,58 @@ void loop()
 // }
 
 
-// Interrupt service routines for the left motor's quadrature encoder
-void HandleInterruptA(){
-  Bnew = fastDigitalRead(encoderPinB);
-  Anew = fastDigitalRead(encoderPinA);
-  // B1Set = fastDigitalRead(encoderPinB1);
-  // A1Set = fastDigitalRead(encoderPinA1);
+// // Interrupt service routines for the left motor's quadrature encoder
+// void HandleInterruptA(){
+//   Bnew = fastDigitalRead(encoderPinB);
+//   Anew = fastDigitalRead(encoderPinA);
+//   // B1Set = fastDigitalRead(encoderPinB1);
+//   // A1Set = fastDigitalRead(encoderPinA1);
   
-  // if ( (Bnew == B1Set) || (Anew == A1Set) ) return;
+//   // if ( (Bnew == B1Set) || (Anew == A1Set) ) return;
 
-  encoderPos+=ParseEncoder();
+//   encoderPos+=ParseEncoder();
   
-  Aold = Anew;
-  Bold = Bnew;
-}
+//   Aold = Anew;
+//   Bold = Bnew;
+// }
 
-// Interrupt service routines for the right motor's quadrature encoder
-void HandleInterruptB(){
-  // Test transition;
-  Bnew = fastDigitalRead(encoderPinB);
-  Anew = fastDigitalRead(encoderPinA);
-  // B1Set = fastDigitalRead(encoderPinB1);
-  // A1Set = fastDigitalRead(encoderPinA1);
+// // Interrupt service routines for the right motor's quadrature encoder
+// void HandleInterruptB(){
+//   // Test transition;
+//   Bnew = fastDigitalRead(encoderPinB);
+//   Anew = fastDigitalRead(encoderPinA);
+//   // B1Set = fastDigitalRead(encoderPinB1);
+//   // A1Set = fastDigitalRead(encoderPinA1);
 
-  // if ( (Bnew == B1Set) || (Anew == A1Set) ) return;
+//   // if ( (Bnew == B1Set) || (Anew == A1Set) ) return;
 
-  encoderPos+=ParseEncoder();
+//   encoderPos+=ParseEncoder();
   
-  Aold = Anew;
-  Bold = Bnew;
-}
+//   Aold = Anew;
+//   Bold = Bnew;
+// }
 
-int ParseEncoder(){
-  if(Aold && Bold){
-    if(!Anew && Bnew) return 1;
-    if(Anew && !Bnew) return -1;
-  }else if(!Aold && Bold){
-    if(!Anew && !Bnew) return 1;
-    if(Anew && Bnew) return -1;
-  }else if(!Aold && !Bold){
-    if(Anew && !Bnew) return 1;
-    if(!Anew && Bnew) return -1;
-  }else if(Aold && !Bold){
-    if(Anew && Bnew) return 1;
-    if(!Anew && !Bnew) return -1;
-  }
+// int ParseEncoder(){
+//   if(Aold && Bold){
+//     if(!Anew && Bnew) return 1;
+//     if(Anew && !Bnew) return -1;
+//   }else if(!Aold && Bold){
+//     if(!Anew && !Bnew) return 1;
+//     if(Anew && Bnew) return -1;
+//   }else if(!Aold && !Bold){
+//     if(Anew && !Bnew) return 1;
+//     if(!Anew && Bnew) return -1;
+//   }else if(Aold && !Bold){
+//     if(Anew && Bnew) return 1;
+//     if(!Anew && !Bnew) return -1;
+//   }
+// }
+
+
+void HandleInterruptA (){
+
+  BSet = fastDigitalRead(encoderPinB);
+
+  encoderPos += BSet ? -1 : +1;
+
 }
