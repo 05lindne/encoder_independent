@@ -2,7 +2,6 @@
 // Encoder Functions--------------------------------------------------
 
 //libraries for high performance reads and writes e.g. fastDigitalRead( pin )
-#include <DigitalIO.h>
 #include "SoftSPI.h"
 
 //Encoder specific variables-----------------------
