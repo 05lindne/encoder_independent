@@ -6,29 +6,16 @@
 
 //Encoder specific variables-----------------------
 #define encoderPinA 2
-// #define encoderPinB 3
 #define encoderPinB 8
-// #define encoderPinA1 4 //0 // inverted channels
-// #define encoderPinB1 5 //1 // inverted channels
 
 
 
-// int encoderInterruptA = 0;
-// int encoderInterruptB = 1;
 int encoderInterruptA = 1;
-// int encoderInterruptB = 0;
+
 
 volatile long encoderPos = 1;
 volatile long oldPos = 0;
-// volatile long encoderRev = 0;
-// volatile long oldRev = 0;
 
-// volatile long Anew = 0;
-// volatile long Aold = 0;
-// volatile long Bnew = 0;
-// volatile long Bold = 0;
-// volatile long A1old = 1; // inverted channels
-// volatile long B1new = 1; // inverted channels
 
 volatile long BSet = 0;
 
@@ -36,7 +23,7 @@ volatile long BSet = 0;
 int test =0;
 
 void HandleInterruptA();
-// void HandleInterruptB();
+
 
 
 void setup(){
@@ -45,14 +32,14 @@ void setup(){
   Serial.begin(9600);           // set up Serial library at 9600 bps  
   
 
-   // Quadrature encoders
+
   pinMode(encoderPinA, INPUT);      // sets pin A as input
   digitalWrite(encoderPinA, LOW);  // turn on pullup resistors
   pinMode(encoderPinB, INPUT);      // sets pin B as input
   digitalWrite(encoderPinB, LOW);  // turn on pullup resistors
   
   attachInterrupt(encoderInterruptA, HandleInterruptA, RISING);
-  // attachInterrupt(encoderInterruptB, HandleInterruptB, CHANGE);
+
 
   Serial.println("Encoder configuration done.");               
 }
@@ -89,86 +76,14 @@ void loop()
 
 
 
-
-
-
-// // Interrupt on A changing state
-// void HandleInterruptA(){
-
-//   //heart of the encoder count
-//   // (Bnew^Aold && B1new^A1old) ? encoderPos++ : encoderPos-- ; // XOR for normal and inverted channels and comparison 
-//   Bnew^Aold ? encoderPos++ : encoderPos-- ; // XOR for normal and inverted channels and comparison 
-
-//   Aold = fastDigitalRead(encoderPinA);
-//   // A1old = fastDigitalRead(encoderPinA1);
-
-// }
-
-// // Interrupt on B changing state
-// void HandleInterruptB(){
-
-//   Bnew=fastDigitalRead(encoderPinB);
-//   // B1new=fastDigitalRead(encoderPinB1);
-
-//   //heart of the encoder count
-//   // (Bnew^Aold && B1new^A1old) ? encoderPos++:encoderPos--;// XOR for normal and inverted channels and comparison
-//   Bnew^Aold ? encoderPos++:encoderPos--;// XOR for normal and inverted channels and comparison
-
-// }
-
-
-// // Interrupt service routines for the left motor's quadrature encoder
-// void HandleInterruptA(){
-//   Bnew = fastDigitalRead(encoderPinB);
-//   Anew = fastDigitalRead(encoderPinA);
-//   // B1Set = fastDigitalRead(encoderPinB1);
-//   // A1Set = fastDigitalRead(encoderPinA1);
-  
-//   // if ( (Bnew == B1Set) || (Anew == A1Set) ) return;
-
-//   encoderPos+=ParseEncoder();
-  
-//   Aold = Anew;
-//   Bold = Bnew;
-// }
-
-// // Interrupt service routines for the right motor's quadrature encoder
-// void HandleInterruptB(){
-//   // Test transition;
-//   Bnew = fastDigitalRead(encoderPinB);
-//   Anew = fastDigitalRead(encoderPinA);
-//   // B1Set = fastDigitalRead(encoderPinB1);
-//   // A1Set = fastDigitalRead(encoderPinA1);
-
-//   // if ( (Bnew == B1Set) || (Anew == A1Set) ) return;
-
-//   encoderPos+=ParseEncoder();
-  
-//   Aold = Anew;
-//   Bold = Bnew;
-// }
-
-// int ParseEncoder(){
-//   if(Aold && Bold){
-//     if(!Anew && Bnew) return 1;
-//     if(Anew && !Bnew) return -1;
-//   }else if(!Aold && Bold){
-//     if(!Anew && !Bnew) return 1;
-//     if(Anew && Bnew) return -1;
-//   }else if(!Aold && !Bold){
-//     if(Anew && !Bnew) return 1;
-//     if(!Anew && Bnew) return -1;
-//   }else if(Aold && !Bold){
-//     if(Anew && Bnew) return 1;
-//     if(!Anew && !Bnew) return -1;
-//   }
-// }
-
-
 void HandleInterruptA (){
 
+  // Test transition; 
+  // since the interrupt will only fire on 'rising' 
+  // we don't need to read pin A
   BSet = fastDigitalRead(encoderPinB);
 
+  // and adjust counter +1 if A leads B
   encoderPos += BSet ? -1 : +1;
 
 }
